@@ -1,0 +1,30 @@
+# Python package
+# https://packaging.python.org/en/latest/tutorials/packaging-projects/
+# https://setuptools.pypa.io/en/latest/userguide/quickstart.html#basic-use
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tweets2pdf"
+version = "0.0.2"
+dependencies = [
+    "pytz",
+    "python-dateutil",
+    "fpdf",
+    "requests",
+    "emoji"
+]
+readme = "README.md"
+description = "Parse a Twitter achive JSON and produce a PDF file."
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/qedjoe/tweet-parser"
+"Bug Tracker" = "https://github.com/qedjoe/tweet-parser/issues"

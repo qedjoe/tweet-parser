@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+
+import argparse
+import logging
+import datetime
+import itertools
+
+from pathlib import Path
+
+import dateutil.parser
+import pytz
+
+from .twitter import read_twitter_json, simplify_tweet
+from .pdf import PDFDocument
+
+DESCRIPTION = """
+Parse Twitter archived JSON files and convert to PDF files
+"""
+
+DEFAULT_FONT = './font/DejaVuSans.ttf'
+
+logger = logging.getLogger(__name__)
+
+
+def utc_timestamp(timestamp: str) -> datetime.datetime:
+    """
+    Parse user-inputted timestamp
+    """
+    # Parse timestamp
+    t = dateutil.parser.parse(timestamp)
+    # Convert to UTC
+    return pytz.UTC.localize(t)
+
+
+def get_args():
+    """
+    Command-line arguments
+    """
+
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    # Twitter archive options
+    parser.add_argument("-f", "--file", type=Path, dest="filename", help="Path to Twitter JSON archive", required=True)
+    parser.add_argument('--encoding', default='utf-8', help='Input file character set')
+    parser.add_argument("-a", "--hashtags", help="Filter by hashtags (comma-separated list)", default=str())
+    parser.add_argument("-s", "--date_start", dest="date_start", type=utc_timestamp)
+    parser.add_argument("-e", "--date_end", dest="date_end", type=utc_timestamp)
+    parser.add_argument('--start', type=int, help="Start at this tweet number")
+    parser.add_argument('--stop', type=int, help="Stop after this many tweets")
+
+    # PDF output options
+    parser.add_argument("-p", "--pdf", type=Path, help='Output PDF file path', required=True)
+    parser.add_argument('-i', '--images', help='Download images and put in the PDF document (SLOW)', action='store_true')
+    parser.add_argument('-w', '--imgwidth', help="Image width", default=150)
+    
+    # Font options
+    parser.add_argument('--font', help='Unicode font TTF file', type=Path, default=Path(DEFAULT_FONT))
+    parser.add_argument('--font_family', default='DejaVu Sans')
+    parser.add_argument('--font_size', type=float, default=11)
+    parser.add_argument('--loglevel', default='INFO', help="Verbosity level: DEBUG, INFO, WARNING, ERROR")
+    parser.add_argument('--language', default='en', help='Language ISO 639-1 code')
+
+    return parser.parse_args()
+
+
+def main():
+    options = get_args()
+    logging.basicConfig(level=options.loglevel)
+
+    # Get the selected hashtags
+    hashtag_filter = {s.strip() for s in options.hashtags.casefold().split(',')}
+
+    pdf = PDFDocument(font=options.font, font_family=options.font_family, font_size=options.font_size)
+
+    # Iterate over input tweets
+    tweet_count = 0
+    for i, tweet in itertools.islice(enumerate(read_twitter_json(options.filename, encoding=options.encoding)), options.start, options.stop):
+        tweet_count += 1
+
+        # Show progress
+        if tweet_count % 1000 == 0:
+            logger.info(f"Processing tweet {tweet_count}")
+        logger.debug(tweet)
+
+        # Decode tweet in a simple structure
+        tweet_simple = simplify_tweet(tweet, language=options.language)
+
+        # Time filter
+        try:
+            if tweet_simple['created_at'] < options.date_start:
+                continue
+        except TypeError:
+            pass
+        try:
+            if tweet_simple['created_at'] >= options.date_end:
+                continue
+        except TypeError:
+            pass
+
+        # Filter by hashtag
+        if not tweet_simple['hashtags'].union(hashtag_filter):
+            continue
+
+        pdf.add_tweet(tweet_simple, download_images=options.images, image_width=options.imgwidth)
+
+    pdf.output(options.pdf)
+
+
+if __name__ == '__main__':
+    main()
