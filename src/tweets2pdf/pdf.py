@@ -41,9 +41,6 @@ class PDFDocument:
 
         image_width = image_width or IMAGE_WIDTH
 
-        # Line height
-        height = height or self.font_size * 0.6
-
         # Timestamp
         self.cell(tweet.created_at.isoformat())
         # Hyperlink to Tweet
@@ -51,15 +48,18 @@ class PDFDocument:
         # Text body
         self.multi_cell(tweet.full_text)
 
-    
         # Embed the image
         for image_uri in tweet.images:
             if download_images:
                 try:
                     self.add_image(image_uri, w=image_width, session=session)
+
+                # Ignore HTTP errors e.g. 404 Not Found
                 except requests.HTTPError as exc:
                     logger.error(exc)
                     logger.warning('Skipping image')
+            
+            # Write the URL of every image
             self.cell(image_uri, link=image_uri)
 
     def add_image(self, image_uri: str, session: requests.Session, w = None, **kwargs):
