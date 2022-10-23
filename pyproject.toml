@@ -28,3 +28,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/qedjoe/tweet-parser"
 "Bug Tracker" = "https://github.com/qedjoe/tweet-parser/issues"
+
+[project.scripts]
+tweets2pdf = "tweets2pdf.__main__:main"
