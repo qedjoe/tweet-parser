@@ -83,8 +83,8 @@ def simplify_tweet(tweet: Mapping, username: str = None, language: str = None) -
     try:
         full_text = full_text.encode('utf-8').decode('unicode-escape')
     except UnicodeDecodeError as exc:
-        logger.error(exc)
-        logger.error(full_text)
+        logger.warning(exc)
+        logger.info(full_text)
         pass
 
     # Convert short urls (t.co) into their original links
