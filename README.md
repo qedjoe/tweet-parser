@@ -38,14 +38,14 @@ See: Twitter Help Centre [How to download your Twitter archive](https://help.twi
 The basic usage is:
 
 ```bash
-python -m tweets2pdf -f tweets.js --images -p output.pdf
+tweets2pdf -f tweets.js --images -p output.pdf
 ```
 
 The `--images` option enables the downloading of pictures from Twitter, which will make the process *much slower*.
 
 For more details:
 ```bash
-python -m tweets2pdf --help
+tweets2pdf --help
 ```
 
 # Development
