@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import imp
 import logging
 import datetime
 import itertools
@@ -12,6 +13,7 @@ import pytz
 
 from .twitter import read_twitter_json, simplify_tweet
 from .pdf import PDFDocument
+from .settings import ENCODING
 
 DESCRIPTION = """
 Parse Twitter archived JSON files and convert to PDF files
@@ -41,7 +43,7 @@ def get_args():
 
     # Twitter archive options
     parser.add_argument("-f", "--file", type=Path, dest="filename", help="Path to Twitter JSON archive", required=True)
-    parser.add_argument('--encoding', default='utf-8', help='Input file character set')
+    parser.add_argument('--encoding', default=ENCODING, help='Input file character set')
     parser.add_argument("-a", "--hashtags", help="Filter by hashtags (comma-separated list)", default=str())
     parser.add_argument("-s", "--date_start", dest="date_start", type=utc_timestamp)
     parser.add_argument("-e", "--date_end", dest="date_end", type=utc_timestamp)

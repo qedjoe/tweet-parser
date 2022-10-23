@@ -22,7 +22,8 @@ class TwitterTestCase(unittest.TestCase):
         # Iterate over JSON files
         for path in self.iter_tweet_files():
             with self.subTest(path=path):
-                tweets2pdf.twitter.read_twitter_json(path)
+                tweets = tweets2pdf.twitter.read_twitter_json(path)
 
-    def test_true(self):
-        self.assertTrue(True)
+                for tweet in tweets:
+                    tweets2pdf.twitter.simplify_tweet(tweet)
+

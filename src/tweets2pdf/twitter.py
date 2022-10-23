@@ -1,3 +1,4 @@
+import imp
 import json
 from pathlib import Path
 from typing import Iterator
@@ -6,13 +7,17 @@ import urllib.parse
 from http import HTTPStatus
 import logging
 
-import dateutil
+import dateutil.parser
 import emoji
+
+from .settings import ENCODING
 
 logger = logging.getLogger(__name__)
 
 
 def read_twitter_json(path: Path, encoding=None) -> Sequence[Mapping]:
+    encoding = encoding or ENCODING
+
     # Load input file into memory
     with path.open(encoding=encoding) as file:
         data = file.read()
