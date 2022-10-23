@@ -5,11 +5,13 @@ import imp
 import logging
 import datetime
 import itertools
+from typing import Optional
 
 from pathlib import Path
 
 import dateutil.parser
 import pytz
+import requests
 
 from .twitter import read_twitter_json, simplify_tweet
 from .pdf import PDFDocument
@@ -73,6 +75,10 @@ def main():
 
     pdf = PDFDocument(font=options.font, font_family=options.font_family, font_size=options.font_size)
 
+    session: Optional[requests.Session] = None
+    if options.images:
+        session = requests.Session()
+
     # Iterate over input tweets
     tweet_count = 0
     for i, tweet in itertools.islice(enumerate(read_twitter_json(options.filename, encoding=options.encoding)), options.start, options.stop):
@@ -102,7 +108,7 @@ def main():
         if not tweet_simple['hashtags'].union(hashtag_filter):
             continue
 
-        pdf.add_tweet(tweet_simple, download_images=options.images, image_width=options.imgwidth)
+        pdf.add_tweet(tweet_simple, download_images=options.images, image_width=options.imgwidth, session=session)
 
     pdf.output(options.pdf)
 

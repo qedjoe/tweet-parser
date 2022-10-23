@@ -4,6 +4,8 @@ import tempfile
 import datetime
 from pathlib import Path
 
+import requests
+
 import tweets2pdf.pdf
 
 class PDFTestCase(unittest.TestCase):
@@ -26,4 +28,5 @@ class PDFTestCase(unittest.TestCase):
     def test_add_image(self):
         uri = 'https://ia800905.us.archive.org/33/items/clevelandart-1921.11-the-fairy-of-the-alp/1921.11_full.jpg'
 
-        self.pdf.add_image(uri)
+        with requests.Session() as session:
+            self.pdf.add_image(uri, session=session)

@@ -36,7 +36,7 @@ class PDFDocument:
 
         self.pdf.add_page()
 
-    def add_tweet(self, tweet: Mapping, height: float = None, download_images: bool = False, image_width = None):
+    def add_tweet(self, tweet: Mapping, height: float = None, download_images: bool = False, image_width = None, session: requests.Session = None):
         """
         Append the tweet to the PDF document
         """
@@ -55,11 +55,11 @@ class PDFDocument:
 
         if download_images:
             for image_uri in tweet['images']:
-                self.add_image(image_uri, w=image_width)
+                self.add_image(image_uri, w=image_width, session=session)
 
-    def add_image(self, image_uri: str, w = None, **kwargs):
+    def add_image(self, image_uri: str, session: requests.Session, w = None, **kwargs):
         # Download image
-        with tweets2pdf.utils.download_temp_file(image_uri) as file:
+        with tweets2pdf.utils.download_temp_file(image_uri, session=session) as file:
             try:
                 # Insert picture into PDF document
                 self.pdf.image(file.name, link=image_uri, w=w or 50, **kwargs)
