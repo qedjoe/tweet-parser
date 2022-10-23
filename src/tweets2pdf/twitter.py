@@ -56,7 +56,7 @@ def simplify_tweet(tweet: Mapping, username: str = None, language: str = None) -
     """
 
     # Language code ISO 639-1
-    lang = tweet.get('lang', language or 'en')
+    lang = tweet.get('lang', language or LANGUAGE)
 
     # Remove undetermined language (any language match) or artificial language
     if lang in {'und', 'art'}:
