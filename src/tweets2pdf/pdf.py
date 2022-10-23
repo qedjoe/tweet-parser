@@ -9,6 +9,7 @@ import requests
 import fpdf
 
 import tweets2pdf.utils
+from .settings import FONT_FAMILY, FONT_SIZE, FONT, IMAGE_WIDTH, UNIT
 
 logger = logging.getLogger(__name__)
 
@@ -20,15 +21,18 @@ class PDFDocument:
     https://pyfpdf.readthedocs.io/en/latest/
     """
 
-    def __init__(self, font: Path, font_family: str, font_size: float = None, unit:str =None, style: str=None, **kwargs):
-        self.pdf = fpdf.FPDF(**kwargs)
-        self.font_size = font_size
+    def __init__(self, font: Path = None, font_family: str = None, font_size: float = None, unit:str =None, style: str=None, **kwargs):
+        self.unit = unit or UNIT
+        self.pdf = fpdf.FPDF(unit=self.unit, **kwargs)
+        self.font = Path(font or FONT)
+        self.font_family = font_family or FONT_FAMILY
+        self.font_size = font_size or FONT_SIZE
         self.style = style or ''
 
         # Use a Unicode font so we can use full UTF-8 character set
         # https://pyfpdf.readthedocs.io/en/latest/Unicode/index.html
-        self.pdf.add_font(font_family, style=self.style, fname=font, uni=True)
-        self.pdf.set_font(family=font_family, style=self.style, size=self.font_size)
+        self.pdf.add_font(family=self.font_family, style=self.style, fname=self.font, uni=True)
+        self.pdf.set_font(family=self.font_family, style=self.style, size=self.font_size)
 
         self.pdf.add_page()
 
@@ -36,6 +40,8 @@ class PDFDocument:
         """
         Append the tweet to the PDF document
         """
+
+        image_width = image_width or IMAGE_WIDTH
 
         # Line height
         height = height or self.font_size * 0.6

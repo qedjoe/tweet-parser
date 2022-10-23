@@ -13,13 +13,12 @@ import pytz
 
 from .twitter import read_twitter_json, simplify_tweet
 from .pdf import PDFDocument
-from .settings import ENCODING
+from .settings import ENCODING, LANGUAGE, FONT_FAMILY, FONT_SIZE, FONT, IMAGE_WIDTH
 
 DESCRIPTION = """
 Parse Twitter archived JSON files and convert to PDF files
 """
 
-DEFAULT_FONT = './font/DejaVuSans.ttf'
 
 logger = logging.getLogger(__name__)
 
@@ -53,14 +52,14 @@ def get_args():
     # PDF output options
     parser.add_argument("-p", "--pdf", type=Path, help='Output PDF file path', required=True)
     parser.add_argument('-i', '--images', help='Download images and put in the PDF document (SLOW)', action='store_true')
-    parser.add_argument('-w', '--imgwidth', help="Image width", default=150)
+    parser.add_argument('-w', '--imgwidth', help="Image width", default=IMAGE_WIDTH)
     
     # Font options
-    parser.add_argument('--font', help='Unicode font TTF file', type=Path, default=Path(DEFAULT_FONT))
-    parser.add_argument('--font_family', default='DejaVu Sans')
-    parser.add_argument('--font_size', type=float, default=11)
+    parser.add_argument('--font', help='Unicode font TTF file', type=Path, default=FONT)
+    parser.add_argument('--font_family', default=FONT_FAMILY)
+    parser.add_argument('--font_size', type=float, default=FONT_SIZE)
     parser.add_argument('--loglevel', default='INFO', help="Verbosity level: DEBUG, INFO, WARNING, ERROR")
-    parser.add_argument('--language', default='en', help='Language ISO 639-1 code')
+    parser.add_argument('--language', default=LANGUAGE, help='Language ISO 639-1 code')
 
     return parser.parse_args()
 

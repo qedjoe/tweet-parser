@@ -10,7 +10,7 @@ import logging
 import dateutil.parser
 import emoji
 
-from .settings import ENCODING
+from .settings import ENCODING, LANGUAGE
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,17 @@ def remove_emoji(s: str, lang: str = None) -> str:
     https://carpedm20.github.io/emoji/docs/#replacing-and-removing-emoji
     """
 
+    def replace(s, data_dict):
+        nonlocal lang
+
+        try:
+            return data_dict[lang]
+        # If this language isn't there, default
+        except KeyError:
+            return data_dict[LANGUAGE]
+
     # Replace emoji symbols with text representation
-    return emoji.replace_emoji(s, replace=lambda _, data_dict: data_dict[lang or 'en'])
+    return emoji.replace_emoji(s, replace=replace)
 
 def simplify_tweet(tweet: Mapping, username: str = None, language: str = None) -> Mapping:
     """
@@ -45,7 +54,13 @@ def simplify_tweet(tweet: Mapping, username: str = None, language: str = None) -
 
     :returns: Simplified object
     """
+
+    # Language code ISO 639-1
     lang = tweet.get('lang', language or 'en')
+
+    # Remove undetermined language (any language match) or artificial language
+    if lang in {'und', 'art'}:
+        lang = None
 
     # Map Twitter short-URLs to full URLs
     urls = {url['url']: url['expanded_url'] for url in tweet['entities']['urls']}
@@ -60,9 +75,17 @@ def simplify_tweet(tweet: Mapping, username: str = None, language: str = None) -
         pass
 
     # Process message body
+    # Remove emoji characters (these don't convert to PDF very well)
     full_text = remove_emoji(tweet['full_text'], lang=lang)
-    # Remove crazy characters
-    full_text = full_text.encode('utf-8').decode('unicode-escape')
+
+    # Remove crazy characters, which will also break PDF
+    # https://docs.python.org/3/howto/unicode.html
+    try:
+        full_text = full_text.encode('utf-8').decode('unicode-escape')
+    except UnicodeDecodeError as exc:
+        logger.error(exc)
+        logger.error(full_text)
+        pass
 
     # Convert short urls (t.co) into their original links
     for short_url, expanded_url in urls.items():
