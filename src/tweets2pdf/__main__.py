@@ -12,7 +12,7 @@ import dateutil.parser
 import pytz
 import requests
 
-from .twitter import read_twitter_json, simplify_tweet
+from .tweet import Tweet
 from .pdf import PDFDocument
 from .settings import ENCODING, LANGUAGE, FONT_FAMILY, FONT_SIZE, FONT, IMAGE_WIDTH
 
@@ -74,42 +74,46 @@ def main():
 
     pdf = PDFDocument(font=options.font, font_family=options.font_family, font_size=options.font_size)
 
+    # Create a HTTP session if we want to download images
     session: Optional[requests.Session] = None
     if options.images:
         session = requests.Session()
 
     # Iterate over input tweets
     tweet_count = 0
-    for i, tweet in itertools.islice(enumerate(read_twitter_json(options.filename, encoding=options.encoding)), options.start, options.stop):
+    for tweet_data in itertools.islice(Tweet.load(options.filename, encoding=options.encoding), options.start, options.stop):
         tweet_count += 1
 
         # Show progress
         if tweet_count % 1000 == 0:
             logger.info(f"Processing tweet {tweet_count}")
-        logger.debug(tweet)
 
         # Decode tweet in a simple structure
-        tweet_simple = simplify_tweet(tweet, language=options.language)
+        tweet = Tweet(tweet_data)
 
         # Time filter
         try:
-            if tweet_simple['created_at'] < options.date_start:
+            if tweet.created_at < options.date_start:
                 continue
         except TypeError:
             pass
+
         try:
-            if tweet_simple['created_at'] >= options.date_end:
+            if tweet.created_at >= options.date_end:
                 continue
         except TypeError:
             pass
 
         # Filter by hashtag
-        if not tweet_simple['hashtags'].union(hashtag_filter):
+        if not tweet.hashtags.union(hashtag_filter):
             continue
 
-        pdf.add_tweet(tweet_simple, download_images=options.images, image_width=options.imgwidth, session=session)
+        pdf.add_tweet(tweet, download_images=options.images, image_width=options.imgwidth, session=session)
 
     pdf.output(options.pdf)
+
+    if session is not None:
+        session.close()
 
 
 if __name__ == '__main__':

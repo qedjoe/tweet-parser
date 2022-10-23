@@ -6,6 +6,7 @@ from pathlib import Path
 import requests
 
 import tweets2pdf.pdf
+import tweets2pdf.tweet
 
 class PDFTestCase(unittest.TestCase):
     def setUp(self):
@@ -17,11 +18,21 @@ class PDFTestCase(unittest.TestCase):
             self.pdf.output(name)
 
     def test_add_tweet(self):
-        tweet = dict(
-            created_at=datetime.datetime.min,
-            uri=f"https://twitter.com/_/status/0",
+        tweet_data = dict(
+            created_at="Wed Apr 20 18:58:12 +0000 2022",
+            id_str= "1516853757119590403",
             full_text="Hello world!",
+            extended_entities=dict(),
+            entities=dict(
+                urls=[
+                    dict(
+                        url="https://t.co/MEQuGtt2Kh",
+                        expanded_url= "https://www.amazon.com/dp/0879232153/ref=nosim?tag=ufojoe-20",
+                    ),
+                ],
+            )
         )
+        tweet = tweets2pdf.tweet.Tweet(tweet_data)
         self.pdf.add_tweet(tweet)
 
     def test_add_image(self):

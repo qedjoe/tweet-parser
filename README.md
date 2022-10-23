@@ -13,7 +13,7 @@ This is a simple tool to parse Twitter archived JSON files and convert to PDF do
 
 Install [Python](https://www.python.org/).
 
-Install this package:
+Install this package in your current environment using the command below:
 
 ```bash
 pip install tweets2pdf
@@ -21,10 +21,10 @@ pip install tweets2pdf
 
 ## Upgrade
 
-To upgrade to the latest version:
+To update to the latest version of this software:
 
 ```bash
-pip install tweets2pdf --upgrade
+pip install --upgrade tweets2pdf
 ```
 
 # Usage

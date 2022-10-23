@@ -2,7 +2,7 @@ import unittest
 import tempfile
 from pathlib import Path
 
-import tweets2pdf.twitter
+import tweets2pdf.tweet
 import tweets2pdf.pdf
 
 
@@ -21,7 +21,7 @@ class TwitterTestCase(unittest.TestCase):
         # Iterate over JSON files
         for path in self.iter_tweet_files():
             with self.subTest(path=str(path)):
-                yield tweets2pdf.twitter.read_twitter_json(path)
+                yield tweets2pdf.tweet.Tweet.load(path)
 
     def test_build_pdf(self):
         # Create a PDF document for each input Twitter archive
@@ -29,8 +29,8 @@ class TwitterTestCase(unittest.TestCase):
             pdf = tweets2pdf.pdf.PDFDocument()
 
             # Add tweets to the document
-            for tweet in tweets:
-                tweet = tweets2pdf.twitter.simplify_tweet(tweet)
+            for tweet_data in tweets:
+                tweet = tweets2pdf.tweet.Tweet(tweet_data)
                 pdf.add_tweet(tweet)
             
             # Write an output file (this takes time)
