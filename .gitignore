@@ -134,3 +134,6 @@ dmypy.json
 
 font/*.pkl
 *.pdf
+
+*.json
+*.js

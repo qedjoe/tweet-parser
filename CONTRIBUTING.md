@@ -7,13 +7,25 @@ python -m venv ./venv
 pip instal -e .
 ```
 
-# Packaging
+## Unit tests
 
-See [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
+Automated tests are defined in the `./tests` directory. To run the unit tests, run:
 
-See `pyproject.toml` for package metadata.
+```bash
+python -m unittest discover --failfast --verbose
+```
 
-## Manual release publishing
+# Publishing
+
+## Packaging
+
+This project is packaged. See [Packaging Python Projects](https://packaging.python.org/en/latest/tutorials/packaging-projects/). See `pyproject.toml` for package metadata.
+
+## Automatic publishing
+
+GitHub Actions is configured for this repository. See the `.github` directory.
+
+## Manual publishing
 
 These commands require the `build` and `twine` packages.
 

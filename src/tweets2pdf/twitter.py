@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import Iterator
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 import urllib.parse
 from http import HTTPStatus
 import logging
@@ -12,7 +12,7 @@ import emoji
 logger = logging.getLogger(__name__)
 
 
-def read_twitter_json(path: Path, encoding=None) -> Iterator[Mapping]:
+def read_twitter_json(path: Path, encoding=None) -> Sequence[Mapping]:
     # Load input file into memory
     with path.open(encoding=encoding) as file:
         data = file.read()
@@ -21,8 +21,7 @@ def read_twitter_json(path: Path, encoding=None) -> Iterator[Mapping]:
     data = '[' + data.partition('[')[2]
 
     # Parse JSON
-    for doc in json.loads(data):
-        yield doc['tweet']
+    return [doc['tweet'] for doc in json.loads(data)]
 
 
 def remove_emoji(s: str, lang: str = None) -> str:
