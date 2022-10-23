@@ -48,6 +48,14 @@ For more details:
 python -m tweets2pdf --help
 ```
 
-# Deployment status
+# Development
+
+## Contributing
+
+Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for information about participating in this project.
+
+Please submit bug reports using [GitHub Issues](https://github.com/qedjoe/tweet-parser/issues).
+
+## Deployment status
 
 [![Upload Python Package](https://github.com/qedjoe/tweet-parser/actions/workflows/python-publish.yml/badge.svg)](https://github.com/qedjoe/tweet-parser/actions/workflows/python-publish.yml)
