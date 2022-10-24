@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tweets2pdf"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
     "pytz",
     "python-dateutil",

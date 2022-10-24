@@ -15,6 +15,7 @@ import requests
 from .tweet import Tweet
 from .pdf import PDFDocument
 from .settings import ENCODING, LANGUAGE, FONT_FAMILY, FONT_SIZE, FONT, IMAGE_WIDTH
+import tweets2pdf.utils
 
 DESCRIPTION = """
 Parse Twitter archived JSON files and convert to PDF files
@@ -77,7 +78,7 @@ def main():
     # Create a HTTP session if we want to download images
     session: Optional[requests.Session] = None
     if options.images:
-        session = requests.Session()
+        session = tweets2pdf.utils.get_session()
 
     # Iterate over input tweets
     tweet_count = 0

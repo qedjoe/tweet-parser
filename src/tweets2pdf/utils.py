@@ -6,6 +6,7 @@ from contextlib import contextmanager
 
 import requests
 import emoji
+import requests.adapters
 
 from .settings import LANGUAGE
 
@@ -53,3 +54,15 @@ def remove_emoji(s: str, lang: str = None) -> str:
 
     # Replace emoji symbols with text representation
     return emoji.replace_emoji(s, replace=replace)
+
+
+def get_session(**kwargs) -> requests.Session:
+    session = requests.Session()
+
+    # Configure backoff strategy
+    retry = requests.adapters.Retry(total=3, backoff_factor=1)
+    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter=adapter)
+    session.mount('https://', adapter=adapter)
+
+    return session
